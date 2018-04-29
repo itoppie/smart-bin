@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Google Maps Multiple Markers</title>
+
+  <!-- <link rel="stylesheet" href="datepicker/daterangepicker.css">
+  <link rel="stylesheet" href="datepicker/bootstrap-datepicker.min.css">
+  <script src="datepicker/bootstrap-datepicker.min.js"></script>
+  <script src="datepicker/daterangepicker.js"></script> -->
+
+  <link href="asset/select2fix.css" rel="stylesheet" />
+  <link rel="stylesheet" href="asset/selectize.default.css">
+  <link rel="stylesheet" href="asset/css/bootstrap-datepicker.min.css" />
+  <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.common-material.min.css" />
+  <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.material.min.css" />
+  <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.material.mobile.min.css" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://kendo.cdn.telerik.com/2018.1.221/js/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-sanitize.js"></script>
+  <script src="asset/select.min.js"></script>
+  <script src="https://kendo.cdn.telerik.com/2018.1.221/js/kendo.all.min.js"></script>
+  <script src="asset/js/bootstrap-datepicker.min.js"></script>
+  <script src="asset/moment.js"></script>
+  <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script src="app.module.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+
+
+
+
+
+
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyANIj6VtHQP-djV4RbjEhsL2FDDqBZkej8",
+      authDomain: "smartbin-c5427.firebaseapp.com",
+      databaseURL: "https://smartbin-c5427.firebaseio.com",
+      projectId: "smartbin-c5427",
+      storageBucket: "",
+      messagingSenderId: "332877541995"
+    };
+    firebase.initializeApp(config);
+
+
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcJ6HxOjZpYd0rA2Frbz9Bal_JEz1szJM"></script>
+  <style>
+    #map {
+      height: 100%;
+    }
+
+    #floating-panel {
+      position: absolute;
+      top: 10px;
+      right: 5px;
+      z-index: 5;
+      background-color: #fff;
+      padding: 5px;
+      border: 1px solid #999;
+      text-align: center;
+      font-family: 'Roboto', 'sans-serif';
+      line-height: 30px;
+      padding-left: 10px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body ng-app="appModule" ng-controller="ctrl  as vm">
+
+  <div id="floating-panel">
+    ชื่อของถังขยะ
+    <br>
+    <input type="text" id="binID" ng-model="vm.model.binId">
+    <br> ละติจูด (Latitude)
+    <br>
+    <input type="text" id="i_Latitude" ng-model="vm.model.i_Latitude">
+    <br> ลองติจูด (Longitude)
+    <br>
+    <input type="text" id="i_Longitude" ng-model="vm.model.i_Longitude">
+    <br>
+    <br>
+    <button type="button" class="btn btn-success btn-block" onclick="addFirebase()">ตกลง</button>
+    <br>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+      Log
+    </button>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">log </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <form>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="bin">Bin</label>
+                  <ui-select ng-model='vm.binId' theme='selectize' on-select='vm.onSelectCallback($item, $model)'>
+                    <ui-select-match placeholder='Select Bin'>{{$select.selected.value.name}}</ui-select-match>
+                    <ui-select-choices repeat='item.value.id as (key, item) in vm.bins | filter:  $select.search'>
+                      <div ng-bind-html='item.value.name | highlight: $select.search'></div>
+
+                    </ui-select-choices>
+                  </ui-select>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="date">Date</label>
+                  <date ng-model="vm.date"></date>
+                </div>
+              </div>
+
+
+            </form>
+          </div>
+          <div>
+            <kendo-grid options="vm.gridOption"></kendo-grid>
+          </div>
+
+
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+
+</body>
+
+</html>
