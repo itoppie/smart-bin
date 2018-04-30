@@ -3,6 +3,8 @@ const app = express();
 const firebase = require('firebase');
 const config = require('./config')
 const service = require('./service')
+var path = require("path");
+
 // app.get('/', function (req, res) {
 //     res.sendFile('./index.html');
 
