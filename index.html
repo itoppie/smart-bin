@@ -86,16 +86,16 @@
   <div id="floating-panel">
     ชื่อของถังขยะ
     <br>
-    <input type="text" id="binID" ng-model="vm.model.binId">
+    <input type="text" id="binID" ng-model="vm.bin">
     <br> ละติจูด (Latitude)
     <br>
-    <input type="text" id="i_Latitude" ng-model="vm.model.i_Latitude">
+    <input type="text" id="i_Latitude" ng-model="vm.model.lat">
     <br> ลองติจูด (Longitude)
     <br>
-    <input type="text" id="i_Longitude" ng-model="vm.model.i_Longitude">
+    <input type="text" id="i_Longitude" ng-model="vm.model.lng">
     <br>
     <br>
-    <button type="button" class="btn btn-success btn-block" onclick="addFirebase()">ตกลง</button>
+    <button type="button" class="btn btn-success btn-block" ng-click="vm.addFirebase()">ตกลง</button>
     <br>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
       Log
