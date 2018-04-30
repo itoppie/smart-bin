@@ -3,7 +3,10 @@ const app = express();
 const firebase = require('firebase');
 const config = require('./config')
 const service = require('./service')
+app.get('/', function (req, res) {
+    res.sendFile('index.html');
 
+});
 app.get('/receiver', (request, response) => {
     var can = false;
     if (request.query.binid && request.query.bin) {
