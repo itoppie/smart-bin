@@ -9,7 +9,15 @@ app.controller("ctrl", function ($scope) {
     vm.bins = []
     vm.binId = '';
     var database = firebase.database();
+    vm.addFirebase = addFirebase
 
+    // model for save
+    vm.bin = ''
+    vm.model = {
+        lat: '',
+        lng: '',
+        status: 'blank'
+    }
     vm.onSelectCallback = onSelectCallback
     $scope.$watch('vm.date', function (cur, bef) {
 
@@ -20,8 +28,6 @@ app.controller("ctrl", function ($scope) {
             vm.date = ''
             vm.gridOption.dataSource.read()
         }
-
-
     })
     function getPinColor(status) {
         switch (status) {
@@ -45,6 +51,22 @@ app.controller("ctrl", function ($scope) {
         else {
             list.push(obj);
         }
+    }
+
+    function addFirebase() {
+
+        if (vm.bin && vm.model.lat && vm.model.lng) {
+            firebase.database().ref('bins/' + vm.bin).set(vm.model);
+            alert('บันทึกสำเร็จ')
+            vm.bin = ''
+            vm.model.lat = ''
+            vm.model.lng = ''
+        }
+        else {
+            alert("กรุณากรอกข้อมูลให้ครบ");
+        }
+        //alert('ok')
+
     }
     function initial() {
 
@@ -171,8 +193,31 @@ app.controller("ctrl", function ($scope) {
                         infowindow.open(map, marker);
                     }
                 })(marker, i));
-            })
+            });
+
         });
+
+        //================================================================================ //genesis 4/17/2018
+        google.maps.event.addListener(map, 'click', function (event) {
+
+            vm.model.lat = event.latLng.lat()
+            vm.model.lng = event.latLng.lng()
+            $scope.$apply()
+            placeMarker(event.latLng)
+        });
+        var new_marker;
+        function placeMarker(location) {
+
+            if (new_marker) {
+                new_marker.setPosition(location);
+            } else {
+                new_marker = new google.maps.Marker({
+                    position: location,
+                    map: map
+                });
+            }
+        }
+        //================================================================================
     }
     initial()
 });
